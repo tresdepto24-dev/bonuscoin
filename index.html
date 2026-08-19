@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BonusCom - Generador de Monedas de Descuento</title>
+    <style>
+        :root {
+            --primary-gold: #cd7f32;
+            --dark-bg: #121212;
+            --card-bg: #1f1f1f;
+            --text-light: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        header h1 {
+            color: var(--primary-gold);
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+        header p {
+            font-size: 1rem;
+            color: #b0c4de;
+        }
+        .main-container {
+            background-color: var(--card-bg);
+            border: 2px solid var(--primary-gold);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--primary-gold);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-gold);
+            outline: none;
+        }
+        /* Vista previa de la moneda generada */
+        .preview-container {
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+        }
+        canvas {
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(205, 127, 50, 0.6);
+            max-width: 250px;
+            height: auto;
+            background-color: #000;
+        }
+        .btn-action {
+            background-color: var(--primary-gold);
+            color: #121212;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        .btn-action:hover {
+            background-color: #e69542;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>BonusCom</h1>
+        <p>Generador de Monedas de Beneficios Exclusivos</p>
+    </header>
+
+    <div class="main-container">
+        <div class="form-group">
+            <label for="comercio">Nombre del Comercio:</label>
+            <input type="text" id="comercio" value="Ej: Librería Central" oninput="actualizarMoneda()">
+        </div>
+
+        <div class="form-group">
+            <label for="direccion">Dirección / Cliente:</label>
+            <input type="text" id="direccion" value="Av. Principal 122" oninput="actualizarMoneda()">
+        </div>
+
+        <div class="form-group">
+            <label for="descuento">Descuento Especial:</label>
+            <select id="descuento" onchange="actualizarMoneda()">
+                <option value="10%">10% OFF Extra</option>
+                <option value="15%" selected>15% OFF Extra</option>
+                <option value="20%">20% OFF Extra</option>
+            </select>
+        </div>
+
+        <div class="preview-container">
+            <!-- Aquí se dibuja la moneda dinámicamente con la imagen de fondo y los textos en vivo -->
+            <canvas id="coinCanvas" width="800" height="800"></canvas>
+        </div>
+
+        <button class="btn-action" onclick="descargarMoneda()">Descargar Moneda</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('coinCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.crossOrigin = "anonymous";
+        // Imagen limpia de la moneda con el búho de fondo
+        img.src = "https://lh3.googleusercontent.com/d/1Ad76Tk_9ar7o7EiOHPFlRA3ngg721oKg=s800";
+
+        img.onload = function() {
+            actualizarMoneda();
+        };
+
+        function actualizarMoneda() {
+            const comercio = document.getElementById('comercio').value.toUpperCase();
+            const direccion = document.getElementById('direccion').value.toUpperCase();
+            const descuento = document.getElementById('descuento').value;
+
+            // Limpiar y dibujar la imagen base de la moneda
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            // Franja oscura semitransparente abajo para que los textos resalten con claridad sobre el búho
+            ctx.fillStyle = "rgba(18, 18, 18, 0.88)";
+            ctx.fillRect(0, 500, canvas.width, 300);
+
+            // Línea divisoria en tono bronce
+            ctx.fillStyle = "#cd7f32";
+            ctx.fillRect(0, 495, canvas.width, 5);
+
+            // Texto: Beneficio / Descuento dinámico
+            ctx.fillStyle = '#cd7f32';
+            ctx.font = 'bold 32px "Segoe UI", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText("BONUSYA! • " + descuento, 50, 560);
+
+            // Texto: Nombre del comercio
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 34px "Segoe UI", sans-serif';
+            ctx.fillText(comercio || "COMERCIO", 50, 630);
+
+            // Texto: Dirección o Cliente
+            ctx.fillStyle = '#b0c4de';
+            ctx.font = '28px "Segoe UI", sans-serif';
+            ctx.fillText(direccion || "DIRECCIÓN", 50, 695);
+        }
+
+        function descargarMoneda() {
+            let descLimpio = document.getElementById('descuento').value.replace('%', '');
+            const enlace = document.createElement('a');
+            enlace.download = 'moneda-bonuscom-' + descLimpio + 'porc.png';
+            enlace.href = canvas.toDataURL('image/png');
+            enlace.click();
+        }
+    </script>
+
+</body>
+</html>
