@@ -1,0 +1,2 @@
+# bonuscoin
+bonus coin1
